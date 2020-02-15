@@ -1,9 +1,9 @@
 azure-storage==0.36.0
 azure-functions-worker==1.0.0b11
 singleton-decorator==1.0.0
-Pillow==5.2.0
+Pillow==6.2.0
 matplotlib==3.0.3
 numpy==1.16.4
 wget==3.2
 azure-cognitive-vision-customvision==1.0.0
-tensorflow==1.14.0
+tensorflow==1.15.2

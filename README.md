@@ -11,7 +11,7 @@ However, it would be potentially too confusing to create an example that uses ea
 
 So, you ask, what is this demo about? In short, this demo shows how to set up a pipeline for mass ingestion and near-realtime analysis of journalism documents to provide useful insights as the documents are being stored into durable storage.
 
- 1. ### [Lab01](./Lab-01/Readme.md)
+ 1. ### [Lab-01. Cognitive Services](./Lab-01/Readme.md)
 
 In this lab you will train, evaluate, and deploy a custom image classification model using Microsoft Cognitive Services Custom Vision Service.
 
@@ -20,4 +20,5 @@ The Custom Vision Service is an Azure Cognitive Service that lets you build cust
 The lab is designed to be instructor guided.  In addition to walking you through the lab's steps, the instructor will explain key concepts and as necessary deep dive into technical details.
 
 Don't hesitate to ask questions!
- 2. ### [Lab02](./Lab-02/Readme.md)
+
+ 2. ### [Lab-02. Custom Vision](./Lab-02/Readme.md)

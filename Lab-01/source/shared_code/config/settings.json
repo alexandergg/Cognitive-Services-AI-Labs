@@ -1,10 +1,10 @@
 {
-    "STORAGE_ACCOUNTNAME": "aiworkspace4771990114",
-    "STORAGE_KEY": "LMUuQvqgeM/vmcRONyvORDLtydSmd6fyJ08aAETz5LWObvqUSsBA16LfZfPy39EtDmrKZX6Y95WsH1k/NnCcLw==",
-    "COGNITIVE_KEY": "41c119c35c654c6993c500174a385608",
-    "STORAGE_DOCUMENTS": "day1",
-    "STORAGE_OCR": "ocrimages",
-    "STORAGE_ENRICHMENT": "enrichmentdata",
-    "COMPUTER_VISION_URL": "https://westeurope.api.cognitive.microsoft.com/vision/v2.0/",
-    "TEXT_ANALYTICS_URL": "https://westeurope.api.cognitive.microsoft.com/text/analytics/v2.0/"
+    "STORAGE_ACCOUNTNAME": "",
+    "STORAGE_KEY": "",
+    "COGNITIVE_KEY": "",
+    "STORAGE_DOCUMENTS": "",
+    "STORAGE_OCR": "",
+    "STORAGE_ENRICHMENT": "",
+    "COMPUTER_VISION_URL": "",
+    "TEXT_ANALYTICS_URL": ""
 }

@@ -1,0 +1,213 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroup": {
+            "type": "string",
+            "defaultValue": "tessi",
+            "metadata": {
+                "description": "The name of your resource group where all infrastructure will be created."
+            }	
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "westeurope",
+            "metadata": {
+                "description": "Select where you want to create your resource group. (i.e., East US)."
+            }	
+        },
+        "resourcePrefixName": {
+                "type": "string",
+                "defaultValue": "tessi",
+                "metadata": {
+                    "description": "The name to refer the resources to be deployed."
+                }	
+        }
+    },
+    "variables": {
+        "azsearchname": "[concat(parameters('resourcePrefixName'),'search', uniqueString(resourceGroup().id))]",
+        "cognitiveservicename": "[concat(parameters('resourcePrefixName'),'cs', uniqueString(resourceGroup().id))]",
+        
+        "functionAppNameLinux": "[concat(parameters('resourcePrefixName'),'functionlinux', uniqueString(resourceGroup().id))]",
+        "hostingPlanName": "[concat(parameters('resourcePrefixName'),'hostingplan', uniqueString(resourceGroup().id))]",
+        "applicationInsightsName": "[concat(parameters('resourcePrefixName'),'insights', uniqueString(resourceGroup().id))]",
+        "functionLinuxWorkerRuntime": "python",
+    
+        "storageAccountName": "[concat(parameters('resourcePrefixName'),'st', uniqueString(resourceGroup().id))]",
+        "storageDocuments": "[concat(parameters('resourcePrefixName'),'-day1')]",
+        "storageOcr": "[concat(parameters('resourcePrefixName'),'-ocrimages')]",
+        "storageEnrichment": "[concat(parameters('resourcePrefixName'),'-enrichmentdata')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2017-04-18",
+            "name": "[variables('cognitiveservicename')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "S0"
+            },
+            "kind": "CognitiveServices",
+            "properties": {
+                "apiProperties": {
+                    "statisticsEnabled": false
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-08-01",
+            "type": "Microsoft.Web/sites",
+            "name": "[variables('functionAppNameLinux')]",
+            "location": "[resourceGroup().location]",
+            "kind": "functionapp,linux",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+                "siteConfig": {
+                    "reserved": true,
+                    "AlwaysOn": true,
+                    "appSettings": [
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~3"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('microsoft.insights/components/', variables('applicationInsightsName')), '2015-05-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "[variables('functionLinuxWorkerRuntime')]"
+                        },
+                        {
+                            "name": "STORAGE_ACCOUNTNAME",
+                            "value": "[variables('storageAccountName')]"
+                        },
+                        {
+                            "name": "STORAGE_KEY",
+                            "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
+                        },
+                        {
+                            "name": "STORAGE_DOCUMENTS",
+                            "value": "[variables('storageDocuments')]"
+                        },
+                        {
+                            "name": "STORAGE_OCR",
+                            "value": "[variables('storageOcr')]"
+                        },
+                        {
+                            "name": "STORAGE_ENRICHMENT",
+                            "value": "[variables('storageEnrichment')]"
+                        },
+                        {
+                            "name": "COMPUTERVISION_KEY",
+                            "value": "[listKeys(resourceId('Microsoft.CognitiveServices/accounts', variables('cognitiveservicename')), providers('Microsoft.CognitiveServices', 'accounts').apiVersions[0]).key1]"
+                        },
+                        {
+                            "name": "COMPUTERVISION_ENDPOINT",
+                            "value": "[concat(reference(resourceId('Microsoft.CognitiveServices/accounts', variables('cognitiveservicename')), providers('Microsoft.CognitiveServices', 'accounts').apiVersions[0]).endpoint, 'vision/v2.1/')]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Search/searchServices",
+            "apiVersion": "2015-08-19",
+            "name": "[variables('azsearchname')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "standard"
+            },
+            "properties": {
+                "replicaCount": 1,
+                "partitionCount": 1,
+                "hostingMode": "Default"
+            }
+        },
+        {
+            "apiVersion": "2018-11-01",
+            "name": "[variables('hostingPlanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[resourceGroup().location]",
+            "kind": "linux",
+            "properties": {
+                "name": "[variables('hostingPlanName')]",
+                "workerSize": 3,
+                "workerSizeId": 3,
+                "numberOfWorkers": 1,
+                "reserved": true,
+                "hostingEnvironment": ""
+            },
+            "sku": {
+                "Tier": "PremiumV2",
+                "Name": "P1v2"
+            }
+        },
+        {
+            "name": "[variables('storageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2018-07-01",
+            "location": "[resourceGroup().location]",
+            "kind": "StorageV2",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "accessTier": "Hot"
+            },
+            "resources": [
+                {
+                    "name": "[concat('default/', variables('storageDocuments'))]",
+                    "type": "blobServices/containers",
+                    "apiVersion": "2019-04-01",
+                    "dependsOn": [
+                        "[variables('storageAccountName')]"
+                    ],
+                    "properties": {
+                        "publicAccess": "Blob"
+                    }
+                },
+                {
+                    "name": "[concat('default/', variables('storageOcr'))]",
+                    "type": "blobServices/containers",
+                    "apiVersion": "2019-04-01",
+                    "dependsOn": [
+                        "[variables('storageAccountName')]"
+                    ],
+                    "properties": {
+                        "publicAccess": "Blob"
+                    }
+                },
+                {
+                    "name": "[concat('default/', variables('storageEnrichment'))]",
+                    "type": "blobServices/containers",
+                    "apiVersion": "2019-04-01",
+                    "dependsOn": [
+                        "[variables('storageAccountName')]"
+                    ],
+                    "properties": {
+                        "publicAccess": "Blob"
+                    }
+                }
+            ]
+        },
+        {
+        "apiVersion": "2018-05-01-preview",
+        "name": "[variables('applicationInsightsName')]",
+        "type": "microsoft.insights/components",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "ApplicationId": "[variables('applicationInsightsName')]"
+        }
+        }
+    ]
+}

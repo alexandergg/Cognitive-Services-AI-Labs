@@ -5,22 +5,30 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from io import BytesIO
 from matplotlib.patches import Rectangle
-from ...shared_code.storage.storage import BlobStorageService
-from ...shared_code.config.setting import Settings
+
+try:
+    from shared_code.storage.storage import BlobStorageService
+    from shared_code.config.setting import Settings
+
+except:
+    from __app__.shared_code.storage.storage import BlobStorageService
+    from __app__.shared_code.config.setting import Settings
+
 
 class CognitiveServices():
     def __init__(self):
         self._settings = Settings()
-        self._storage = BlobStorageService(self._settings.get_storage_account(), self._settings.get_storage_key())
-        self._subscription_key = self._settings.get_cognitive_key()
-        self._vision_base_url = self._settings.get_computer_vision_url()
-        self._text_analytics_url = self._settings.get_text_analytics_url()
+        self._storage = BlobStorageService(self._settings.get_key_value("STORAGE_ACCOUNTNAME"),
+                                        self._settings.get_key_value("STORAGE_KEY"))
+        self._subscription_key = self._settings.get_key_value("COGNITIVE_KEY")
+        self._vision_base_url = self._settings.get_key_value("COMPUTER_VISION_URL")
+        self._text_analytics_url = self._settings.get_key_value("TEXT_ANALYTICS_URL")
 
     def checkDatetime(self, utc_now, last_modified, doc):
         blob_date = last_modified.strftime('%Y-%m-%d')
         enrichdata = {}
         if utc_now == blob_date:
-            blob_url = self._storage.make_blob_url(self._settings.get_storage_documents(), doc.name)
+            blob_url = self._storage.make_blob_url(self._settings.get_key_value("STORAGE_DOCUMENTS"), doc.name)
             vision = self.computer_vision_api(blob_url)
             text, word_infos = self.ocr(blob_url, doc.name)
             text_clean = ' '.join(text)
@@ -38,7 +46,8 @@ class CognitiveServices():
             logging.info(f'{json.dumps(enrichdata, indent=4, sort_keys=True)}')
             enrichdata = json.dumps(enrichdata).encode('utf-8')
             filename, _ = os.path.splitext(doc.name)
-            self._storage.upload_file_from_bytes(container_name=self._settings.get_storage_enrichment(), filename=filename+'.json', blob=enrichdata)
+            self._storage.upload_file_from_bytes(container_name=self._settings.get_key_value("STORAGE_ENRICHMENT"),
+                                                filename=filename+'.json', blob=enrichdata)
         else:
             return "False"
     
@@ -86,7 +95,7 @@ class CognitiveServices():
     def showResultOnImage(self, word_infos, blob_url, filename):
         name = os.path.basename(filename)
         plt.figure(figsize=(50,50))
-        b = self._storage.download_blob_bytes(self._settings.get_storage_documents(), filename)
+        b = self._storage.download_blob_bytes(self._settings.get_key_value("STORAGE_DOCUMENTS"), filename)
         image = Image.open(BytesIO(b.content))
         ax = plt.imshow(image, alpha=0.5)
         for word in word_infos:
@@ -98,7 +107,7 @@ class CognitiveServices():
             plt.text(origin[0], origin[1], text, fontsize=20, weight="bold", va="top")
         _ = plt.axis("off")
         plt.savefig('{}'.format(name))
-        self._storage.upload_file(container_name=self._settings.get_storage_ocr(),
+        self._storage.upload_file(container_name=self._settings.get_key_value("STORAGE_OCR"),
                                 filename=name,
                                 local_file='./{}'.format(name),
                                 delete_local_file=True)

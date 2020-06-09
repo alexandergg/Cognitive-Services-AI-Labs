@@ -1,0 +1,174 @@
+{
+  "name": "",
+  "description": "Extract image analysis of the journal documents",
+  "skills":
+  [
+    {
+      "description": "Extract image analysis",
+      "@odata.type": "#Microsoft.Skills.Vision.ImageAnalysisSkill",
+      "context": "/document/normalized_images/*",
+      "defaultLanguageCode": "en",
+      "visualFeatures": [
+          "Tags",
+          "Categories",
+          "Description",
+          "Faces"
+      ],
+      "inputs": [
+          {
+              "name": "image",
+              "source": "/document/normalized_images/*"
+          }
+      ],
+      "outputs": [
+          {
+              "name": "categories", "targetName": "categories"
+          },
+          {
+              "name": "tags", "targetName": "tags"
+          },
+          {
+              "name": "description", "targetName": "description"
+          },
+          {
+              "name": "faces", "targetName": "faces"
+          }
+      ]
+    },
+    {
+      "description": "Extracts text (plain and structured) from image.",
+      "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
+      "context": "/document/normalized_images/*",
+      "defaultLanguageCode": null,
+      "detectOrientation": true,
+      "inputs": [
+        {
+          "name": "image",
+          "source": "/document/normalized_images/*"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "text",
+          "targetName": "text"
+        },
+        {
+          "name": "layoutText",
+          "targetName": "layoutText"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.MergeSkill",
+      "description": "Create merged_text, which includes all the textual representation of each image inserted at the right location in the content field.",
+      "context": "/document",
+      "insertPreTag": " ",
+      "insertPostTag": " ",
+      "inputs": [
+        {
+          "name":"text", "source": "/document/content"
+        },
+        {
+          "name": "itemsToInsert", "source": "/document/normalized_images/*/text"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mergedText", "targetName" : "merged_text"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.LanguageDetectionSkill",
+      "inputs": [
+        {
+          "name": "text", "source": "/document/merged_text"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "languageCode",
+          "targetName": "languageCode"
+        },
+        {
+          "name": "languageName",
+          "targetName": "languageName"
+        },
+        {
+          "name": "score",
+          "targetName": "score"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.EntityRecognitionSkill",
+      "defaultLanguageCode": "en",
+      "includeTypelessEntities": true,
+      "minimumPrecision": 0.5,
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "text", "source": "/document/merged_text"
+        },
+        {
+          "name": "languageCode", "source": "/document/languageCode"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "persons", "targetName": "people"
+        },
+        {
+          "name": "locations", "targetName": "locations"
+        },
+        {
+          "name": "organizations", "targetName": "organizations"
+        },
+        {
+          "name": "entities", "targetName": "entities"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.SplitSkill",
+      "textSplitMode" : "pages",
+      "maximumPageLength": 50000,
+      "defaultLanguageCode": "en",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/merged_text"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "textItems",
+          "targetName": "pages"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
+      "context": "/document/pages/*",
+      "inputs": [
+        {
+          "name": "text", "source": "/document/pages/*"
+        },
+        {
+          "name":"languageCode", "source": "/document/languageCode"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "keyPhrases",
+          "targetName": "keyPhrases"
+        }
+      ]
+    }
+  ],
+  "cognitiveServices": {
+    "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
+    "description": "",
+    "key": ""
+  }
+}

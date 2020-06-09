@@ -1,9 +1,12 @@
 import os, logging, shutil, datetime
-from ..utils.mime import mime_content_type
-from azure.storage.blob import BlockBlobService, ContainerPermissions, ContentSettings
-from azure.storage.blob import BlobPermissions
+from azure.storage.blob import BlockBlobService, ContainerPermissions, ContentSettings, BlobPermissions
 from singleton_decorator import singleton
 from datetime import timedelta
+
+try:
+    from shared_code.utils.mime import mime_content_type
+except:
+    from __app__.shared_code.utils.mime import mime_content_type
 
 @singleton
 class BlobStorageService:

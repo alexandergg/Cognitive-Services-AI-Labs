@@ -1,0 +1,103 @@
+{
+  "name": "",
+  "dataSourceName": "",
+  "targetIndexName": "",
+  "skillsetName": "",
+  "fieldMappings" : [
+  {
+    "sourceFieldName" : "metadata_storage_path",
+    "targetFieldName" : "id",
+    "mappingFunction" :
+      { "name" : "base64Encode" }
+  },
+  {
+    "sourceFieldName" : "content",
+    "targetFieldName" : "content"
+  }, 
+  {
+    "sourceFieldName" : "metadata_storage_content_type",
+    "targetFieldName" : "ContentType"
+  },
+  {
+    "sourceFieldName" : "metadata_storage_last_modified",
+    "targetFieldName" : "LastModified"
+  },
+  {
+    "sourceFieldName" : "metadata_storage_name",
+    "targetFieldName" : "StorageName"
+  },
+  {
+    "sourceFieldName" : "metadata_storage_path",
+    "targetFieldName" : "StoragePath"
+  }
+],
+ "outputFieldMappings" :
+[
+  {
+    "sourceFieldName": "/document/normalized_images/*/categories/*",
+    "targetFieldName": "categories"
+  },
+  {
+    "sourceFieldName": "/document/normalized_images/*/tags/*",
+    "targetFieldName": "tags"
+  },
+  {
+    "sourceFieldName": "/document/normalized_images/*/description",
+    "targetFieldName": "description"
+  },
+  {
+    "sourceFieldName": "/document/normalized_images/*/faces/*",
+    "targetFieldName": "faces"
+  },
+  {
+    "sourceFieldName" : "/document/normalized_images/*/text",
+    "targetFieldName" : "text"
+  },
+  {
+    "sourceFieldName": "/document/normalized_images/*/layoutText",
+    "targetFieldName": "layoutText"
+  },
+  {
+    "sourceFieldName": "/document/languageCode",
+    "targetFieldName": "languageCode"
+  },
+  {
+    "sourceFieldName": "/document/languageName",
+    "targetFieldName": "languageName"
+  },
+  {
+    "sourceFieldName" : "/document/people",
+    "targetFieldName" : "people"
+  },
+  {
+    "sourceFieldName" : "/document/organizations",
+    "targetFieldName" : "organizations"
+  },
+  {
+    "sourceFieldName" : "/document/locations",
+    "targetFieldName" : "locations"
+  },
+  {
+    "sourceFieldName" : "/document/entities",
+    "targetFieldName" : "entities"
+  },
+  {
+    "sourceFieldName" : "/document/pages/*/keyPhrases/*",
+    "targetFieldName" : "keyPhrases"
+  }
+],
+ "parameters":
+  {
+    "maxFailedItems":-1,
+    "maxFailedItemsPerBatch":-1,
+    "configuration":
+    {
+      "dataToExtract": "contentAndMetadata",
+      "imageAction": "generateNormalizedImages",
+      "failOnUnsupportedContentType" : false,
+      "excludedFileNameExtensions" : ".emf,.wdp,.tiff",
+      "indexStorageMetadataOnlyForOversizedDocuments" : true,
+      "failOnUnprocessableDocument" : false
+    }
+  }
+}

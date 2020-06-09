@@ -1,7 +1,7 @@
 {
-    "SUBSCRIPTION_TRAINING_KEY": "3308f30e52964dedaf79a106fad153b4",
-    "SUBSCRIPTION_PREDICTION_KEY": "83a9bfea90a347e3ab0bf5ad54b8695e",
+    "SUBSCRIPTION_TRAINING_KEY": "",
+    "SUBSCRIPTION_PREDICTION_KEY": "",
     "ENDPOINT": "https://westeurope.api.cognitive.microsoft.com",
-    "PROJECT_NAME": "AIWorkshop",
-    "PREDICTION_RESOURCE_ID": "a798a873-cd97-4a75-b6f5-636475d707a0"
+    "PROJECT_NAME": "",
+    "PREDICTION_RESOURCE_ID": ""
 }

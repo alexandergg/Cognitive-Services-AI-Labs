@@ -7,7 +7,7 @@ When you have your function app and running you should think that actually you h
 So, how can you used it? How can we start indexing information at the Index?
 
 ##### Step 1: Execute powershell script
-For this step you will need to execute powershell script on `TailwindTraders-ShippingManagement/Deploy/` folder:
+For this step you will need to execute powershell script on `/Deploy/` folder:
 
 ```
 .\DeployUnifiedAzSearch.ps1

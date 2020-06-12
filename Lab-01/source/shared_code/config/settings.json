@@ -2,9 +2,9 @@
     "STORAGE_ACCOUNTNAME": "",
     "STORAGE_KEY": "",
     "COGNITIVE_KEY": "",
-    "STORAGE_DOCUMENTS": "tessi-day1",
-    "STORAGE_OCR": "tessi-ocrimages",
-    "STORAGE_ENRICHMENT": "tessi-enrichmentdata",
+    "STORAGE_DOCUMENTS": "",
+    "STORAGE_OCR": "",
+    "STORAGE_ENRICHMENT": "",
     "COMPUTER_VISION_URL": "https://westeurope.api.cognitive.microsoft.com/vision/v2.0/",
     "TEXT_ANALYTICS_URL": "https://westeurope.api.cognitive.microsoft.com/text/analytics/v2.0/"
 }

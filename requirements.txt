@@ -6,4 +6,4 @@ matplotlib==3.0.3
 numpy==1.16.4
 wget==3.2
 azure-cognitive-vision-customvision==1.0.0
-tensorflow==1.15.2
+tensorflow==2.7.2

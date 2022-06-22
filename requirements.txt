@@ -3,7 +3,7 @@ azure-functions-worker==1.0.0b11
 singleton-decorator==1.0.0
 Pillow==6.2.0
 matplotlib==3.0.3
-numpy==1.16.4
+numpy==1.22.0
 wget==3.2
 azure-cognitive-vision-customvision==1.0.0
 tensorflow==1.15.2
